@@ -113,7 +113,7 @@ func main() {
 	// note that, len(result) == t.NumOut()
 	result := v.Call(argv)
 	if len(result) != 1 || result[0].Kind() != reflect.Int {
-		fmt.Println(result[0])
+		return
 	}
 	fmt.Println(result[0].Int())
 }
