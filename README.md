@@ -60,3 +60,31 @@ func main() {
 	fmt.Printf("Github username was changed to: %q\n", u.Github)
 }
 ```
+
+### Function Calls
+
+#### Call method without prameters, and without return value.
+```go
+package main
+
+import (
+	"fmt"
+	"reflect"
+)
+
+type A struct{}
+
+func (A) Hello() { fmt.Println("World") }
+
+func main() {
+	v := reflect.ValueOf(A{})
+	m := v.MethodByName("Hello")
+	if m.Kind() != reflect.Func {
+		return
+	}
+	m.Call(nil)
+}
+```
+
+#### Call function with list of arguments, and validate return values.
+
