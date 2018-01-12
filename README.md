@@ -192,16 +192,15 @@ import (
 	"reflect"
 )
 
-
 func main() {
 	var (
 		a []string
 		b []interface{}
 		c []io.Writer
 	)
-	fmt.Println(fill(&a), a)
-	fmt.Println(fill(&b), b)
-	fmt.Println(fill(&c), c)
+	fmt.Println(fill(&a), a) // pass
+	fmt.Println(fill(&b), b) // pass
+	fmt.Println(fill(&c), c) // fail
 }
 
 func fill(i interface{}) error {
