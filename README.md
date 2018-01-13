@@ -2,14 +2,14 @@
 
 ### Table Of Content
 - [Read struct tags](#read-struct-tags)
-- [Get and set struct fields](get-and-set-struct-fields)
-- [Function calls](function-calls)
-  - [Call to a method without prameters, and without return value](call-method-without-prameters-and-without-return-value)
-  - [Call to a function with list of arguments, and validate return values](call-function-with-list-of-arguments-and-validate-return-values)
-  - [Call to a function with variadic parameter](call-function-with-variadic-parameter)
-  - [Create function at runtime](create-function-dynamically)
-- [Fill slice with values](fill-slice-with-strings-without-knowing-its-type-use-case-decoder)
-- [Set a value of a number]()
+- [Get and set struct fields](#get-and-set-struct-fields)
+- [Function calls](#function-calls)
+  - [Call to a method without prameters, and without return value](#call-method-without-prameters-and-without-return-value)
+  - [Call to a function with list of arguments, and validate return values](#call-function-with-list-of-arguments-and-validate-return-values)
+  - [Call to a function with variadic parameter](#call-function-with-variadic-parameter)
+  - [Create function at runtime](#create-function-dynamically)
+- [Fill slice with values](#fill-slice-with-strings-without-knowing-its-type-use-case-decoder)
+- [Set a value of a number](#set-a-value-of-a-number-use-case-decoder)
 
 ### Read struct tags
 
