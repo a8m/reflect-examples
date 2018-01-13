@@ -333,7 +333,7 @@ func decodeMap(s string, i interface{}) error {
 	// get the value that the pointer v points to.
 	v = v.Elem()
 	t := v.Type()
-	// allocate a new map, if v is nil. see m2 above.
+	// allocate a new map, if v is nil. see: m2, m3, m4.
 	if v.IsNil() {
 		v.Set(reflect.MakeMap(t))
 	}
