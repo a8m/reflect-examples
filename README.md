@@ -1,6 +1,17 @@
 # reflect-cheat-sheet
 
-### Read Struct Tags
+### Table Of Content
+- [Read struct tags](#read-struct-tags)
+- [Get and set struct fields](get-and-set-struct-fields)
+- [Function calls](function-calls)
+  - [Call to a method without prameters, and without return value](call-method-without-prameters-and-without-return-value)
+  - [Call to a function with list of arguments, and validate return values](call-function-with-list-of-arguments-and-validate-return-values)
+  - [Call to a function with variadic parameter](call-function-with-variadic-parameter)
+  - [Create function at runtime](create-function-dynamically)
+- [Fill slice with values](fill-slice-with-strings-without-knowing-its-type-use-case-decoder)
+- [Set a value of a number]()
+
+### Read struct tags
 
 ```go
 package main
@@ -30,7 +41,7 @@ func main() {
 }
 ```
 
-### Get and Set Struct Fields
+### Get and set struct fields
 ```go
 package main
 
@@ -61,9 +72,9 @@ func main() {
 }
 ```
 
-### Function Calls
+### Function calls
 
-#### Call method without prameters, and without return value.
+#### Call method without prameters, and without return value
 ```go
 package main
 
@@ -86,7 +97,7 @@ func main() {
 }
 ```
 
-#### Call function with list of arguments, and validate return values.
+#### Call function with list of arguments, and validate return values
 ```go
 package main
 
@@ -156,7 +167,7 @@ func main() {
 }
 ```
 
-### Create Function Dynamically
+### Create function at runtime
 ```go
 package main
 
