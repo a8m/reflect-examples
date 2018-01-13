@@ -61,6 +61,7 @@ type User struct {
 
 func main() {
 	u := &User{Name: "Ariel Mashraki"}
+	// Elem returns the value that the pointer u points to.
 	v := reflect.ValueOf(u).Elem()
 	f := v.FieldByName("Github")
 	if !f.IsValid() || !f.CanSet() {
