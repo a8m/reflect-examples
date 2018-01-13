@@ -240,7 +240,7 @@ func canAssign(v reflect.Value) bool {
 }
 ```
 
-### Set a value of an int type. Use case: decoder. 
+### Set a value of a number. Use case: decoder. 
 ```go
 package main
 
@@ -256,10 +256,14 @@ func main() {
 		a int8
 		b int16
 		c uint
+		d float32
+		e string
 	)
 	fmt.Println(fill(&a), a)
 	fmt.Println(fill(&b), b)
 	fmt.Println(fill(&c), c)
+	fmt.Println(fill(&d), c)
+	fmt.Println(fill(&e), e)
 }
 
 func fill(i interface{}) error {
@@ -275,8 +279,18 @@ func fill(i interface{}) error {
 			return fmt.Errorf("can't assign value due to %s-overflow", v.Kind())
 		}
 		v.SetInt(n)
+	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
+		if v.OverflowUint(n) {
+			return fmt.Errorf("can't assign value due to %s-overflow", v.Kind())
+		}
+		v.SetUint(n)
+	case reflect.Float32, reflect.Float64:
+		if v.OverflowFloat(n) {
+			return fmt.Errorf("can't assign value due to %s-overflow", v.Kind())
+		}
+		v.SetFloat(n)
 	default:
-		return fmt.Errorf("can't assign value to a non-int type")
+		return fmt.Errorf("can't assign value to a non-number type")
 	}
 	return nil
 }
