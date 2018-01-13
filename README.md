@@ -6,8 +6,9 @@
 - [Function calls](#function-calls)
   - [Call to a method without prameters, and without return value](#call-method-without-prameters-and-without-return-value)
   - [Call to a function with list of arguments, and validate return values](#call-function-with-list-of-arguments-and-validate-return-values)
+  - [Call to a function dynamically. similar to the template/text package](#call-to-a-function-dynamically-similar-to-the-templatetext-package)
   - [Call to a function with variadic parameter](#call-function-with-variadic-parameter)
-  - [Create function at runtime](#create-function-dynamically)
+  - [Create function at runtime](#create-function-at-runtime)
 - [Fill slice with values](#fill-slice-with-strings-without-knowing-its-type-use-case-decoder)
 - [Set a value of a number](#set-a-value-of-a-number-use-case-decoder)
 - [Decode key-value pairs into map](#decode-key-value-pairs-into-map)
@@ -131,7 +132,7 @@ func main() {
 }
 ```
 
-#### Call to a function dynamically. similar to the template/text package.
+#### Call to a function dynamically. similar to the template/text package
 ```go
 package main
 
