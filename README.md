@@ -306,7 +306,7 @@ func fill(i interface{}) error {
 		return fmt.Errorf("can't fill non-slice value")
 	}
 	v.Set(reflect.MakeSlice(v.Type(), 3, 3))
-	// validate the type of the slice.
+	// validate the type of the slice. see below.
 	if !canAssign(v.Index(0)) {
 		return fmt.Errorf("can't assign string to slice elements")
 	}
@@ -316,6 +316,7 @@ func fill(i interface{}) error {
 	return nil
 }
 
+// we accept string, or empty interface.
 func canAssign(v reflect.Value) bool {
 	return v.Kind() == reflect.String || (v.Kind() == reflect.Interface && v.NumMethod() == 0)
 }
