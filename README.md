@@ -65,6 +65,7 @@ func main() {
 	// Elem returns the value that the pointer u points to.
 	v := reflect.ValueOf(u).Elem()
 	f := v.FieldByName("Github")
+	// make sure that this field is defined, and can be changed.
 	if !f.IsValid() || !f.CanSet() {
 		return
 	}
@@ -120,6 +121,7 @@ func main() {
 	t := v.Type()
 	argv := make([]reflect.Value, t.NumIn())
 	for i := range argv {
+		// validate the type of parameter "i".
 		if t.In(i).Kind() != reflect.Int {
 			return
 		}
