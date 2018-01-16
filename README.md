@@ -32,8 +32,10 @@ type User struct {
 }
 
 func main() {
-	var u User
+	var u interface{} = User{}
+	// TypeOf returns the reflection Type that represents the dynamic type of u.
 	t := reflect.TypeOf(u)
+	// Kind returns the specific kind of this type. 
 	if t.Kind() != reflect.Struct {
 		return
 	}
@@ -43,6 +45,7 @@ func main() {
 	}
 }
 ```
+Calling to `Kind()` can returns one of [this list](https://golang.org/pkg/reflect/#Kind).
 
 ### Get and set struct fields
 ```go
