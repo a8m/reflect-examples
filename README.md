@@ -1,4 +1,13 @@
-# reflect-cheat-sheet
+# reflect-examples
+
+This repository contains bunch of example for dealing with the `reflect` package.
+Mainly, for decoding stuff, and calling to functions dynamically.  
+Most of the examples were taken from projects I worked on in the past, and some from projects I am currently working on.  
+
+You will also find informative comments in the examples, that will help you to understand the code.
+some of them are mine, and some of them were taken from the godoc website.
+
+If you want to contribute to this repository, don't hesitate to create a PR.
 
 ### Table Of Content
 - [Read struct tags](#read-struct-tags)
