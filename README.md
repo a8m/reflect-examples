@@ -1,5 +1,3 @@
-![](https://github.com/a8m/reflect-examples/blob/assets/img/logo.png)
-
 <p align="center">
 <img 
     src="https://github.com/a8m/reflect-examples/blob/assets/img/logo.png"
