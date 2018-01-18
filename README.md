@@ -5,8 +5,8 @@
 <br/><br/>
 </p>
 
-This repository contains bunch of examples for dealing with the `reflect` package.
-Mainly, for decoding stuff, and calling to functions dynamically.  
+This repository contains a bunch of examples for dealing with the `reflect` package.
+Mainly, for decoding stuff, and calling functions dynamically.  
 Most of the examples were taken from projects I worked on in the past, and some from projects I am currently working on.  
 
 You will also find informative comments in the examples, that will help you to understand the code.
