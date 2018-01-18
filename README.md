@@ -1,6 +1,13 @@
-# reflect-examples
+![](https://github.com/a8m/reflect-examples/blob/assets/img/logo.png)
 
-This repository contains bunch of example for dealing with the `reflect` package.
+<p align="center">
+<img 
+    src="https://github.com/a8m/reflect-examples/blob/assets/img/logo.png"
+    width="500" alt="Golang reflect package examples">
+<br/><br/>
+</p>
+
+This repository contains bunch of examples for dealing with the `reflect` package.
 Mainly, for decoding stuff, and calling to functions dynamically.  
 Most of the examples were taken from projects I worked on in the past, and some from projects I am currently working on.  
 
@@ -8,6 +15,9 @@ You will also find informative comments in the examples, that will help you to u
 some of them are mine, and some of them were taken from the godoc website.
 
 If you want to contribute to this repository, don't hesitate to create a PR.
+
+The awesome gopher in the logo was taken from [@egonelbre/gophers](https://github.com/egonelbre/gophers).
+
 
 ### Table Of Content
 - [Read struct tags](#read-struct-tags)
