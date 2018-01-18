@@ -30,6 +30,7 @@ The awesome gopher in the logo was taken from [@egonelbre/gophers](https://githu
 - [Set a value of a number](#set-a-value-of-a-number-use-case-decoder)
 - [Decode key-value pairs into map](#decode-key-value-pairs-into-map)
 - [Decode key-value pairs into struct](#decode-key-value-pairs-into-struct)
+- [Encode struct into key-value pairs](#encode-struct-into-key-value-pairs)
 
 ### Read struct tags
 
@@ -515,5 +516,69 @@ func decode(s string, i interface{}) error {
 		f.SetString(s[1])
 	}
 	return nil
+}
+```
+
+### Encode struct into key-value pairs
+```
+package main
+
+import (
+	"fmt"
+	"reflect"
+	"strings"
+)
+
+type User struct {
+	Email   string `kv:"email,omitempty"`
+	Name    string `kv:"name,omitempty"`
+	Github  string `kv:"github,omitempty"`
+	private string
+}
+
+func main() {
+	fmt.Println(encode(User{Name: "Ariel", Github: "a8m"}))
+}
+
+// this example supports only struct, and assume their
+// fields are type string.
+func encode(i interface{}) (string, error) {
+	v := reflect.ValueOf(i)
+	t := v.Type()
+	if t.Kind() != reflect.Struct {
+		return "", fmt.Errorf("type %s is not supported", t.Kind())
+	}
+	var s []string
+	for i := 0; i < t.NumField(); i++ {
+		f := t.Field(i)
+		// skip unexported fields. from godoc:
+		// PkgPath is the package path that qualifies a lower case (unexported)
+		// field name. It is empty for upper case (exported) field names.
+		if f.PkgPath != "" {
+			continue
+		}
+		fv := v.Field(i)
+		key, omit := readTag(f)
+		// skip empty values when "omitempty" set.
+		if omit && fv.String() == "" {
+			continue
+		}
+		s = append(s, fmt.Sprintf("%s=%s", key, fv.String()))
+	}
+	return strings.Join(s, ","), nil
+}
+
+func readTag(f reflect.StructField) (string, bool) {
+	opts := strings.Split(f.Tag.Get("kv"), ",")
+	switch len(opts) {
+	// key name is the struct field, and no "omitempty".
+	case 0:
+		return f.Name, false
+	case 1:
+		return opts[0], false
+	default:
+		return opts[0], opts[1] == "omitempty"
+	}
+
 }
 ```
