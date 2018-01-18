@@ -25,7 +25,7 @@ The awesome gopher in the logo was taken from [@egonelbre/gophers](https://githu
 - [Decode key-value pairs into map](#decode-key-value-pairs-into-map)
 - [Decode key-value pairs into struct](#decode-key-value-pairs-into-struct)
 - [Encode struct into key-value pairs](#encode-struct-into-key-value-pairs)
-- [Check if the underlying type implements an interface](check-if-the-underlying-type-implements-an-interface)
+- [Check if the underlying type implements an interface](#check-if-the-underlying-type-implements-an-interface)
 - [Function calls](#function-calls)
   - [Call to a method without prameters, and without return value](#call-method-without-prameters-and-without-return-value)
   - [Call to a function with list of arguments, and validate return values](#call-function-with-list-of-arguments-and-validate-return-values)
