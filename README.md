@@ -1,6 +1,6 @@
 <p align="center">
 <img 
-    src="https://github.com/a8m/reflect-examples/blob/assets/img/logo.png"
+    src="img/logo.png"
     width="500" alt="Golang reflect package examples">
 <br/><br/>
 </p>
