@@ -20,17 +20,18 @@ The awesome gopher in the logo was taken from [@egonelbre/gophers](https://githu
 ### Table Of Content
 - [Read struct tags](#read-struct-tags)
 - [Get and set struct fields](#get-and-set-struct-fields)
+- [Fill slice with values](#fill-slice-with-strings-without-knowing-its-type-use-case-decoder)
+- [Set a value of a number](#set-a-value-of-a-number-use-case-decoder)
+- [Decode key-value pairs into map](#decode-key-value-pairs-into-map)
+- [Decode key-value pairs into struct](#decode-key-value-pairs-into-struct)
+- [Encode struct into key-value pairs](#encode-struct-into-key-value-pairs)
+- [Check if the underlying type implements an interface](check-if-the-underlying-type-implements-an-interface)
 - [Function calls](#function-calls)
   - [Call to a method without prameters, and without return value](#call-method-without-prameters-and-without-return-value)
   - [Call to a function with list of arguments, and validate return values](#call-function-with-list-of-arguments-and-validate-return-values)
   - [Call to a function dynamically. similar to the template/text package](#call-to-a-function-dynamically-similar-to-the-templatetext-package)
   - [Call to a function with variadic parameter](#call-function-with-variadic-parameter)
   - [Create function at runtime](#create-function-at-runtime)
-- [Fill slice with values](#fill-slice-with-strings-without-knowing-its-type-use-case-decoder)
-- [Set a value of a number](#set-a-value-of-a-number-use-case-decoder)
-- [Decode key-value pairs into map](#decode-key-value-pairs-into-map)
-- [Decode key-value pairs into struct](#decode-key-value-pairs-into-struct)
-- [Encode struct into key-value pairs](#encode-struct-into-key-value-pairs)
 
 ### Read struct tags
 
@@ -95,204 +96,6 @@ func main() {
 	}
 	f.SetString("a8m")
 	fmt.Printf("Github username was changed to: %q\n", u.Github)
-}
-```
-
-### Function calls
-
-#### Call method without prameters, and without return value
-```go
-package main
-
-import (
-	"fmt"
-	"reflect"
-)
-
-type A struct{}
-
-func (A) Hello() { fmt.Println("World") }
-
-func main() {
-	// ValueOf returns a new Value, which is the reflection interface to a Go value.
-	v := reflect.ValueOf(A{})
-	m := v.MethodByName("Hello")
-	if m.Kind() != reflect.Func {
-		return
-	}
-	m.Call(nil)
-}
-```
-
-#### Call function with list of arguments, and validate return values
-```go
-package main
-
-import (
-	"fmt"
-	"reflect"
-)
-
-func Add(a, b int) int { return a + b }
-
-func main() {
-	v := reflect.ValueOf(Add)
-	if v.Kind() != reflect.Func {
-		return
-	}
-	t := v.Type()
-	argv := make([]reflect.Value, t.NumIn())
-	for i := range argv {
-		// validate the type of parameter "i".
-		if t.In(i).Kind() != reflect.Int {
-			return
-		}
-		argv[i] = reflect.ValueOf(i)
-	}
-	// note that, len(result) == t.NumOut()
-	result := v.Call(argv)
-	if len(result) != 1 || result[0].Kind() != reflect.Int {
-		return
-	}
-	fmt.Println(result[0].Int())
-}
-```
-
-#### Call to a function dynamically. similar to the template/text package
-```go
-package main
-
-import (
-	"fmt"
-	"html/template"
-	"reflect"
-	"strconv"
-	"strings"
-)
-
-func main() {
-	funcs := template.FuncMap{
-		"trim":    strings.Trim,
-		"lower":   strings.ToLower,
-		"repeat":  strings.Repeat,
-		"replace": strings.Replace,
-	}
-	fmt.Println(eval(`{{ "hello" 4 | repeat }}`, funcs))
-	fmt.Println(eval(`{{ "Hello-World" | lower }}`, funcs))
-	fmt.Println(eval(`{{ "foobarfoo" "foo" "bar" -1 | replace }}`, funcs))
-	fmt.Println(eval(`{{ "-^-Hello-^-" "-^" | trim }}`, funcs))
-}
-
-// evaluate an expression. note that this implemetation is assuming that the
-// input is valid, and also very limited. for example, whitespaces are not allowed
-// inside a quoted string.
-func eval(s string, funcs template.FuncMap) (string, error) {
-	args, name := parseArgs(s)
-	fn, ok := funcs[name]
-	if !ok {
-		return "", fmt.Errorf("function %s is not defined", name)
-	}
-	v := reflect.ValueOf(fn)
-	t := v.Type()
-	if len(args) != t.NumIn() {
-		return "", fmt.Errorf("invalid number of arguments. got: %v, want: %v", len(args), t.NumIn())
-	}
-	argv := make([]reflect.Value, len(args))
-	// go over the arguments, validate and build them.
-	// note that we support only int, and string in this simple example.
-	for i := range argv {
-		var argType reflect.Kind
-		// if the argument "i" is string.
-		if strings.HasPrefix(args[i], "\"") {
-			argType = reflect.String
-			argv[i] = reflect.ValueOf(strings.Trim(args[i], "\""))
-		} else {
-			argType = reflect.Int
-			// assume that the input is valid.
-			num, _ := strconv.Atoi(args[i])
-			argv[i] = reflect.ValueOf(num)
-		}
-		if t.In(i).Kind() != argType {
-			return "", fmt.Errorf("Invalid argument. got: %v, want: %v", argType, t.In(i).Kind())
-		}
-	}
-	result := v.Call(argv)
-	// in real-world code, we validate it before executing the function,
-	// using the v.NumOut() method. similiar to the text/template package.
-	if len(result) != 1 || result[0].Kind() != reflect.String {
-		return "", fmt.Errorf("function %s must return a one string value", name)
-	}
-	return result[0].String(), nil
-}
-
-// parseArgs is an auxiliary function, that extract the function and its
-// parameter from the given expression.
-func parseArgs(s string) ([]string, string) {
-	args := strings.Split(strings.Trim(s, "{ }"), "|")
-	return strings.Split(strings.Trim(args[0], " "), " "), strings.Trim(args[len(args)-1], " ")
-}
-```
-
-#### Call function with variadic parameter
-```go
-package main
-
-import (
-	"fmt"
-	"math/rand"
-	"reflect"
-)
-
-func Sum(x1, x2 int, xs ...int) int {
-	sum := x1 + x2
-	for _, xi := range xs {
-		sum += xi
-	}
-	return sum
-}
-
-func main() {
-	v := reflect.ValueOf(Sum)
-	if v.Kind() != reflect.Func {
-		return
-	}
-	t := v.Type()
-	argc := t.NumIn()
-	if t.IsVariadic() {
-		argc += rand.Intn(10)
-	}
-	argv := make([]reflect.Value, argc)
-	for i := range argv {
-		argv[i] = reflect.ValueOf(i)
-	}
-	result := v.Call(argv)
-	fmt.Println(result[0].Int()) // assume that t.NumOut() > 0 tested above.
-}
-```
-
-### Create function at runtime
-```go
-package main
-
-import (
-	"fmt"
-	"reflect"
-)
-
-type Add func(int64, int64) int64
-
-func main() {
-	t := reflect.TypeOf(Add(nil))
-	mul := reflect.MakeFunc(t, func(args []reflect.Value) []reflect.Value {
-		a := args[0].Int()
-		b := args[1].Int()
-		return []reflect.Value{reflect.ValueOf(a+b)}
-	})
-	fn, ok := mul.Interface().(Add)
-	if !ok {
-		return
-	}
-	fmt.Println(fn(2,3))
 }
 ```
 
@@ -592,5 +395,245 @@ func readTag(f reflect.StructField) (string, bool) {
 		omit = opts[1] == "omitempty"
 	}
 	return opts[0], omit
+}
+```
+
+### Check if the underlying type implements an interface
+```go
+package main
+
+import (
+	"fmt"
+	"reflect"
+)
+
+type Marshaler interface {
+	MarshalKV() (string, error)
+}
+
+type User struct {
+	Email   string `kv:"email,omitempty"`
+	Name    string `kv:"name,omitempty"`
+	Github  string `kv:"github,omitempty"`
+	private string
+}
+
+func (u User) MarshalKV() (string, error) {
+	return fmt.Sprintf("name=%s,email=%s,github=%s", u.Name, u.Email, u.Github), nil
+}
+
+func main() {
+	fmt.Println(encode(User{"boring", "Ariel", "a8m", ""}))
+	fmt.Println(encode(&User{Github: "posener", Name: "Eyal", Email: "boring"}))
+}
+
+var marshalerType = reflect.TypeOf(new(Marshaler)).Elem()
+
+func encode(i interface{}) (string, error) {
+	t := reflect.TypeOf(i)
+	if !t.Implements(marshalerType) {
+		return "", fmt.Errorf("encode only supports structs that implement the Marshaler interface")
+	}
+	m, _ := reflect.ValueOf(i).Interface().(Marshaler)
+	return m.MarshalKV()
+}
+```
+
+
+### Function calls
+
+#### Call method without prameters, and without return value
+```go
+package main
+
+import (
+	"fmt"
+	"reflect"
+)
+
+type A struct{}
+
+func (A) Hello() { fmt.Println("World") }
+
+func main() {
+	// ValueOf returns a new Value, which is the reflection interface to a Go value.
+	v := reflect.ValueOf(A{})
+	m := v.MethodByName("Hello")
+	if m.Kind() != reflect.Func {
+		return
+	}
+	m.Call(nil)
+}
+```
+
+#### Call function with list of arguments, and validate return values
+```go
+package main
+
+import (
+	"fmt"
+	"reflect"
+)
+
+func Add(a, b int) int { return a + b }
+
+func main() {
+	v := reflect.ValueOf(Add)
+	if v.Kind() != reflect.Func {
+		return
+	}
+	t := v.Type()
+	argv := make([]reflect.Value, t.NumIn())
+	for i := range argv {
+		// validate the type of parameter "i".
+		if t.In(i).Kind() != reflect.Int {
+			return
+		}
+		argv[i] = reflect.ValueOf(i)
+	}
+	// note that, len(result) == t.NumOut()
+	result := v.Call(argv)
+	if len(result) != 1 || result[0].Kind() != reflect.Int {
+		return
+	}
+	fmt.Println(result[0].Int())
+}
+```
+
+#### Call to a function dynamically. similar to the template/text package
+```go
+package main
+
+import (
+	"fmt"
+	"html/template"
+	"reflect"
+	"strconv"
+	"strings"
+)
+
+func main() {
+	funcs := template.FuncMap{
+		"trim":    strings.Trim,
+		"lower":   strings.ToLower,
+		"repeat":  strings.Repeat,
+		"replace": strings.Replace,
+	}
+	fmt.Println(eval(`{{ "hello" 4 | repeat }}`, funcs))
+	fmt.Println(eval(`{{ "Hello-World" | lower }}`, funcs))
+	fmt.Println(eval(`{{ "foobarfoo" "foo" "bar" -1 | replace }}`, funcs))
+	fmt.Println(eval(`{{ "-^-Hello-^-" "-^" | trim }}`, funcs))
+}
+
+// evaluate an expression. note that this implemetation is assuming that the
+// input is valid, and also very limited. for example, whitespaces are not allowed
+// inside a quoted string.
+func eval(s string, funcs template.FuncMap) (string, error) {
+	args, name := parseArgs(s)
+	fn, ok := funcs[name]
+	if !ok {
+		return "", fmt.Errorf("function %s is not defined", name)
+	}
+	v := reflect.ValueOf(fn)
+	t := v.Type()
+	if len(args) != t.NumIn() {
+		return "", fmt.Errorf("invalid number of arguments. got: %v, want: %v", len(args), t.NumIn())
+	}
+	argv := make([]reflect.Value, len(args))
+	// go over the arguments, validate and build them.
+	// note that we support only int, and string in this simple example.
+	for i := range argv {
+		var argType reflect.Kind
+		// if the argument "i" is string.
+		if strings.HasPrefix(args[i], "\"") {
+			argType = reflect.String
+			argv[i] = reflect.ValueOf(strings.Trim(args[i], "\""))
+		} else {
+			argType = reflect.Int
+			// assume that the input is valid.
+			num, _ := strconv.Atoi(args[i])
+			argv[i] = reflect.ValueOf(num)
+		}
+		if t.In(i).Kind() != argType {
+			return "", fmt.Errorf("Invalid argument. got: %v, want: %v", argType, t.In(i).Kind())
+		}
+	}
+	result := v.Call(argv)
+	// in real-world code, we validate it before executing the function,
+	// using the v.NumOut() method. similiar to the text/template package.
+	if len(result) != 1 || result[0].Kind() != reflect.String {
+		return "", fmt.Errorf("function %s must return a one string value", name)
+	}
+	return result[0].String(), nil
+}
+
+// parseArgs is an auxiliary function, that extract the function and its
+// parameter from the given expression.
+func parseArgs(s string) ([]string, string) {
+	args := strings.Split(strings.Trim(s, "{ }"), "|")
+	return strings.Split(strings.Trim(args[0], " "), " "), strings.Trim(args[len(args)-1], " ")
+}
+```
+
+#### Call function with variadic parameter
+```go
+package main
+
+import (
+	"fmt"
+	"math/rand"
+	"reflect"
+)
+
+func Sum(x1, x2 int, xs ...int) int {
+	sum := x1 + x2
+	for _, xi := range xs {
+		sum += xi
+	}
+	return sum
+}
+
+func main() {
+	v := reflect.ValueOf(Sum)
+	if v.Kind() != reflect.Func {
+		return
+	}
+	t := v.Type()
+	argc := t.NumIn()
+	if t.IsVariadic() {
+		argc += rand.Intn(10)
+	}
+	argv := make([]reflect.Value, argc)
+	for i := range argv {
+		argv[i] = reflect.ValueOf(i)
+	}
+	result := v.Call(argv)
+	fmt.Println(result[0].Int()) // assume that t.NumOut() > 0 tested above.
+}
+```
+
+### Create function at runtime
+```go
+package main
+
+import (
+	"fmt"
+	"reflect"
+)
+
+type Add func(int64, int64) int64
+
+func main() {
+	t := reflect.TypeOf(Add(nil))
+	mul := reflect.MakeFunc(t, func(args []reflect.Value) []reflect.Value {
+		a := args[0].Int()
+		b := args[1].Int()
+		return []reflect.Value{reflect.ValueOf(a+b)}
+	})
+	fn, ok := mul.Interface().(Add)
+	if !ok {
+		return
+	}
+	fmt.Println(fn(2,3))
 }
 ```
