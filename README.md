@@ -537,7 +537,20 @@ type User struct {
 }
 
 func main() {
-	fmt.Println(encode(User{Name: "Ariel", Github: "a8m"}))
+	var (
+		u = User{Name: "Ariel", Github: "a8m"}
+		v = struct {
+			A, B, C string
+		}{
+			"foo",
+			"bar",
+			"baz",
+		}
+		w = &User{}
+	)
+	fmt.Println(encode(u))
+	fmt.Println(encode(v))
+	fmt.Println(encode(w))
 }
 
 // this example supports only struct, and assume their
@@ -569,16 +582,15 @@ func encode(i interface{}) (string, error) {
 }
 
 func readTag(f reflect.StructField) (string, bool) {
-	opts := strings.Split(f.Tag.Get("kv"), ",")
-	switch len(opts) {
-	// key name is the struct field, and no "omitempty".
-	case 0:
+	val, ok := f.Tag.Lookup("kv")
+	if !ok {
 		return f.Name, false
-	case 1:
-		return opts[0], false
-	default:
-		return opts[0], opts[1] == "omitempty"
 	}
-
+	opts := strings.Split(val, ",")
+	omit := false
+	if len(opts) == 1 {
+		omit = opts[1] == "omitempty"
+	}
+	return opts[0], omit
 }
 ```
