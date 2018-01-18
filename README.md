@@ -520,7 +520,7 @@ func decode(s string, i interface{}) error {
 ```
 
 ### Encode struct into key-value pairs
-```
+```go
 package main
 
 import (
