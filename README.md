@@ -301,7 +301,6 @@ func main() {
 
 func decode(s string, i interface{}) error {
 	v := reflect.ValueOf(i)
-
 	if v.Kind() != reflect.Ptr || v.IsNil() {
 		return fmt.Errorf("decode requires non-nil pointer")
 	}
