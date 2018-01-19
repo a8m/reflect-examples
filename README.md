@@ -141,7 +141,7 @@ func fill(i interface{}) error {
 	return nil
 }
 
-// we accept string, or empty interface.
+// we accept strings, or empty interfaces.
 func canAssign(v reflect.Value) bool {
 	return v.Kind() == reflect.String || (v.Kind() == reflect.Interface && v.NumMethod() == 0)
 }
@@ -355,7 +355,7 @@ func main() {
 	fmt.Println(encode(w))
 }
 
-// this example supports only struct, and assume their
+// this example supports only structs, and assume their
 // fields are type string.
 func encode(i interface{}) (string, error) {
 	v := reflect.ValueOf(i)
