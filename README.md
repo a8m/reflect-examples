@@ -390,7 +390,7 @@ func readTag(f reflect.StructField) (string, bool) {
 	}
 	opts := strings.Split(val, ",")
 	omit := false
-	if len(opts) == 1 {
+	if len(opts) == 2 {
 		omit = opts[1] == "omitempty"
 	}
 	return opts[0], omit
