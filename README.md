@@ -367,9 +367,10 @@ func encode(i interface{}) (string, error) {
 	var s []string
 	for i := 0; i < t.NumField(); i++ {
 		f := t.Field(i)
-		// skip unexported fields. from godoc:
+		// Skip unexported fields. As mentioned in GoDoc:
 		// PkgPath is the package path that qualifies a lower case (unexported)
 		// field name. It is empty for upper case (exported) field names.
+		// For Go version >= 1.17, use the StructField.IsExported function instead.
 		if f.PkgPath != "" {
 			continue
 		}
